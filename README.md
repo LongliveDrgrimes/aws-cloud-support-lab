@@ -6,7 +6,11 @@
 
 # 
 
-# \*\*In progress.\*\* The website is working after troubleshooting Systems Manager connectivity and the EC2 security group. Additional monitoring, a simulated Linux service outage, and cleanup are planned.
+# \*\*In progress:\*\* The AWS environment, troubleshooting exercises,
+
+# and monitoring alarm are complete. Resource cleanup and final cost
+
+# verification are pending.
 
 # 
 
@@ -14,7 +18,13 @@
 
 # 
 
-# This hands-on lab simulates supporting a website hosted on an Amazon EC2 instance. The goal is to build the underlying network, connect to a Linux server, deploy a simple web page, and investigate issues using a structured cloud support approach.
+# This hands-on project demonstrates how to build and support a
+
+# website hosted on an Amazon EC2 instance. I created a custom VPC,
+
+# deployed a Linux web server, investigated connection issues,
+
+# performed a simulated service recovery, and configured monitoring.
 
 # 
 
@@ -24,19 +34,17 @@
 
 # \- Amazon VPC, subnets, route tables, and internet gateways
 
-# \- EC2, Amazon Linux, and Elastic IP addresses
+# \- Amazon EC2, Amazon Linux, and Elastic IP addresses
 
 # \- IAM roles and AWS Systems Manager Session Manager
 
 # \- Security groups and network ACLs
 
-# \- Linux service administration and command-line troubleshooting
+# \- Linux service administration and troubleshooting
+
+# \- Amazon CloudWatch and Amazon SNS
 
 # \- Incident documentation and customer communication
-
-# 
-
-# \*\*Planned:\*\* CloudWatch alarms and Amazon SNS notifications.
 
 # 
 
@@ -50,7 +58,7 @@
 
 # &#x20;  |
 
-# &#x20;  | HTTP (port 80)
+# &#x20;  | HTTP on port 80
 
 # &#x20;  v
 
@@ -60,7 +68,7 @@
 
 # &#x20;  v
 
-# Public subnet in custom VPC
+# Public subnet in a custom VPC
 
 # &#x20;  |  Subnet network ACL
 
@@ -74,11 +82,25 @@
 
 # &#x20;  +-- Systems Manager Session Manager for administration
 
+# &#x20;  +-- CloudWatch CPU alarm and SNS email notification
+
 # ```
 
 # 
 
-# The instance uses an Elastic IP address for public IPv4 connectivity. The subnet route table directs internet-bound traffic to the internet gateway. The security group controls access to the instance, and the network ACL applies at the subnet level. Session Manager provides terminal access without an inbound SSH rule.
+# The subnet's route table directs internet traffic to an internet
+
+# gateway. The EC2 instance used an Elastic IP address for public
+
+# IPv4 connectivity. A security group controlled access to the
+
+# instance, and a network ACL applied at the subnet level.
+
+# 
+
+# I used Session Manager to administer the instance without opening
+
+# an inbound SSH port.
 
 # 
 
@@ -86,59 +108,33 @@
 
 # 
 
-# 1\. Created a custom VPC, public subnet, internet gateway, and route table.
+# 1\. Created a custom VPC and public subnet.
 
-# 2\. Configured a security group for the web server; the subnet also has a network ACL.
+# 2\. Attached an internet gateway and configured a route table.
 
-# 3\. Created an EC2 IAM role for Systems Manager access and launched an Amazon Linux instance.
+# 3\. Created a web security group and reviewed the subnet's default
 
-# 4\. Associated an Elastic IP after finding that the instance had no public IPv4 address.
+# &#x20;  network ACL.
 
-# 5\. Connected through Session Manager.
+# 4\. Created an IAM role for Systems Manager and launched an Amazon
 
-# 6\. Installed and started Nginx and created a basic test page.
+# &#x20;  Linux EC2 instance.
 
-# 7\. Verified that the page loaded in a browser after correcting the security group.
+# 5\. Associated an Elastic IP after discovering that the instance
 
-# 
+# &#x20;  had no public IPv4 address.
 
-# \### Commands used
+# 6\. Connected to the instance using Session Manager.
 
-# 
+# 7\. Installed and started Nginx and created a test web page.
 
-# ```bash
+# 8\. Corrected the attached security group's HTTP rule and verified
 
-# sudo dnf install -y nginx
+# &#x20;  that the page loaded in a browser.
 
-# sudo systemctl enable --now nginx
+# 9\. Practiced a simulated Nginx outage and recovery.
 
-# ```
-
-# 
-
-# Created a simple test page:
-
-# 
-
-# ```bash
-
-# echo '<h1>Cloud Support Lab</h1><p>The web server is working.</p>' | sudo tee /usr/share/nginx/html/index.html
-
-# ```
-
-# 
-
-# Checked the service and its local response:
-
-# 
-
-# ```bash
-
-# sudo systemctl status nginx --no-pager
-
-# curl -I http://localhost
-
-# ```
+# 10\. Configured a CloudWatch CPU alarm and SNS notification.
 
 # 
 
@@ -146,23 +142,35 @@
 
 # 
 
-# \*\*Issue:\*\* Systems Manager reported that the EC2 instance was not connected.
+# \*\*Issue:\*\* Systems Manager reported that the EC2 instance was not
+
+# connected.
 
 # 
 
-# \*\*Investigation:\*\* Checked the instance details and found that it did not have a public IPv4 address.
+# \*\*Investigation:\*\* I checked the instance details and found that
+
+# it did not have a public IPv4 address.
 
 # 
 
-# \*\*Resolution:\*\* Allocated and associated an Elastic IP address with the instance.
+# \*\*Resolution:\*\* I allocated and associated an Elastic IP address
+
+# with the instance.
 
 # 
 
-# \*\*Verification:\*\* Successfully connected to the instance using Session Manager.
+# \*\*Verification:\*\* I successfully connected to the instance through
+
+# Session Manager.
 
 # 
 
-# \*\*Lesson learned:\*\* An instance using a public subnet and internet gateway still needs an appropriate public IP address and network configuration to reach public AWS service endpoints through that path.
+# \*\*Lesson learned:\*\* A public subnet alone does not give an
+
+# instance a public IP address. The instance also needs a suitable
+
+# network path and permissions to reach Systems Manager.
 
 # 
 
@@ -170,27 +178,115 @@
 
 # 
 
-# \*\*Issue:\*\* The test website did not load in a browser.
+# \*\*Issue:\*\* The test website did not load in my browser.
 
 # 
 
-# \*\*Investigation:\*\* Checked the Nginx service status and used `curl -I http://localhost` to confirm that the web server responded locally on the instance. This narrowed the investigation to the path between the browser and the instance.
+# \*\*Investigation:\*\* I checked the Nginx service status and used
+
+# `curl -I http://localhost` to confirm that the web server
+
+# responded locally on the instance. This helped narrow the issue
+
+# to the network path between the browser and the instance.
 
 # 
 
-# \*\*Cause:\*\* The EC2 security group was blocking browser access to the web server.
+# \*\*Cause:\*\* The security group attached to the instance did not
+
+# allow the browser's HTTP request.
 
 # 
 
-# \*\*Resolution:\*\* Corrected the security group rule for web access.
+# \*\*Resolution:\*\* I corrected the HTTP inbound rule on the attached
+
+# security group.
 
 # 
 
-# \*\*Verification:\*\* Confirmed that the Cloud Support Lab page loaded in the browser.
+# \*\*Verification:\*\* I refreshed the browser and confirmed that the
+
+# Cloud Support Lab page loaded.
 
 # 
 
-# \*\*Example customer update:\*\* The website is available again. I confirmed the web service was running, corrected the network access rule, and verified that the page loaded successfully.
+# \*\*Lesson learned:\*\* Creating a security group is not enough: it
+
+# must also be attached to the intended instance. In this lab, I
+
+# created a separate web security group, but the instance initially
+
+# used the VPC's default security group.
+
+# 
+
+# \## Troubleshooting ticket 3: Simulated Nginx service outage
+
+# 
+
+# \*\*Scenario:\*\* A customer reports that the website is unavailable.
+
+# 
+
+# \*\*Issue:\*\* I intentionally stopped Nginx to simulate a web
+
+# service outage. The website stopped loading.
+
+# 
+
+# \*\*Investigation:\*\* I checked the service status and reviewed
+
+# recent logs:
+
+# 
+
+# ```bash
+
+# sudo systemctl status nginx --no-pager
+
+# sudo journalctl -u nginx --no-pager -n 30
+
+# ```
+
+# 
+
+# The service status showed that Nginx was inactive.
+
+# 
+
+# \*\*Cause:\*\* Nginx had been intentionally stopped for the exercise.
+
+# 
+
+# \*\*Resolution:\*\* I restarted the service:
+
+# 
+
+# ```bash
+
+# sudo systemctl start nginx
+
+# ```
+
+# 
+
+# \*\*Verification:\*\* I confirmed that Nginx was active and refreshed
+
+# the browser to verify that the website loaded.
+
+# 
+
+# \*\*Example customer update:\*\* The website is available again. I
+
+# found that the web service had stopped, restarted it, and
+
+# confirmed that the page was loading.
+
+# 
+
+# \*\*Lesson learned:\*\* Checking a service's status and logs helps
+
+# identify whether the web server is contributing to an outage.
 
 # 
 
@@ -198,11 +294,11 @@
 
 # 
 
-# Created a CloudWatch alarm to monitor the EC2 instance's average
+# I created a CloudWatch alarm to monitor the EC2 instance's average
 
-# CPU utilization over a five-minute period. The alarm sends an email
+# CPU utilization over a five-minute period. The alarm used an
 
-# notification through an Amazon SNS topic when its threshold is met.
+# Amazon SNS topic to send an email notification.
 
 # 
 
@@ -218,139 +314,67 @@
 
 # A CPU alarm does not reliably detect an Nginx service outage.
 
-# A separate website availability check would be a future improvement.
+# A separate website availability check would be a future
 
-
-
-
-
-# \## Troubleshooting ticket 3: Simulated Nginx service outage
+# improvement.
 
 # 
-
-# \*\*Scenario:\*\* A customer reports that the website is unavailable.
-
-# 
-
-# \*\*Issue:\*\* The website stopped loading after I intentionally stopped
-
-# the Nginx service to simulate an outage.
-
-# 
-
-# \*\*Investigation:\*\*
-
-# 
-
-# \- Checked the Nginx service status using:
-
-# 
-
-# &#x20; ```bash
-
-# &#x20; sudo systemctl status nginx --no-pager
-
-# &#x20; ```
-
-# 
-
-# \- Reviewed recent service logs using:
-
-# 
-
-# &#x20; ```bash
-
-# &#x20; sudo journalctl -u nginx --no-pager -n 30
-
-# &#x20; ```
-
-# 
-
-# \- Confirmed that Nginx was inactive.
-
-# 
-
-# \*\*Cause:\*\* The Nginx web service had been intentionally stopped
-
-# for this exercise.
-
-# 
-
-# \*\*Resolution:\*\* Restarted the service using:
-
-# 
-
-# ```bash
-
-# sudo systemctl start nginx
-
-# ```
-
-# 
-
-# \*\*Verification:\*\*
-
-# 
-
-# \- Checked the service status and confirmed it was active.
-
-# \- Refreshed the website in a browser and confirmed it loaded.
-
-# 
-
-# \*\*Customer update:\*\* The website is available again. I found that
-
-# the web service had stopped, restarted it, and verified that the
-
-# page was loading.
-
-# 
-
-# \*\*Lesson learned:\*\* Checking the service status and logs helps
-
-# identify whether a website issue is caused by the web server.
-
-
 
 # \## Evidence
 
 # 
 
-# The `screenshots` folder documents the VPC, subnet, internet gateway,
+# The `screenshots` folder documents the VPC, subnet, internet
 
-# route table, network ACL, security groups, EC2 instance, and Session
+# gateway, route table, network ACL, security groups, EC2 instance,
 
-# Manager connection. It also shows the connection issues I investigated
-
-# and the steps I took to restore access to the website.
+# and Session Manager connection.
 
 # 
 
-# The screenshots include the simulated Nginx service outage, the
+# It also shows the connection issues I investigated, the simulated
 
-# restarted service, and the website working after recovery.
+# Nginx outage and recovery, the working website, and the monitoring
+
+# exercise.
 
 # 
 
 # Sensitive information, including AWS account details and public IP
 
-# addresses, has been redacted from the screenshots.
+# addresses, should be redacted before screenshots are published.
 
-
-
-
+# 
 
 # \## Lessons learned
 
 # 
 
-# \- A public subnet alone does not assign a public IP address to an instance.
+# \- A public subnet alone does not assign a public IP address to an
 
-# \- When an application works locally but not from a browser, network access rules are a useful next place to investigate.
+# &#x20; instance.
 
-# \- Security groups are stateful and apply to instance network interfaces; network ACLs are stateless and apply at the subnet level.
+# \- When an application responds locally but not in a browser,
 
-# \- Documenting symptoms, checks, resolution, and verification makes troubleshooting easier to explain and repeat.
+# &#x20; check the network path and the security group attached to the
+
+# &#x20; instance.
+
+# \- Security groups are stateful and apply to network interfaces.
+
+# &#x20; Network ACLs are stateless and apply at the subnet level.
+
+# \- Service status and logs are useful starting points for Linux
+
+# &#x20; troubleshooting.
+
+# \- A CPU alarm and a website availability check answer different
+
+# &#x20; monitoring questions.
+
+# \- Documenting symptoms, investigation, resolution, and verification
+
+# &#x20; makes support work easier to explain and repeat.
 
 # 
 
@@ -358,7 +382,21 @@
 
 # 
 
-# \*\*Pending:\*\* When the lab is finished, terminate the EC2 instance, release the Elastic IP, remove any alarm and SNS topic created for the project, and review remaining storage and networking resources. Record the resources removed and observed costs here. AWS charges and eligibility depend on the account, Region, resource configuration, and usage.
+# \- Terminated the `cloud-support-lab` EC2 instance.
+
+# \- Released the Elastic IP address used by the lab.
+
+# \- Deleted `cloud-support-lab-vpc`. AWS confirmed that four
+
+# &#x20; associated resources were also removed.
+
+# \- Storage, the CloudWatch alarm, and the SNS topic are being
+
+# &#x20; checked separately.
 
 # 
+
+# \*\*Lab resource cost:\*\* Pending. The lab services were not yet
+
+# listed in the AWS bill when I checked.
 
