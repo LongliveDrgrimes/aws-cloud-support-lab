@@ -6,11 +6,17 @@
 
 # 
 
-# \*\*In progress:\*\* The AWS environment, troubleshooting exercises,
+# \*\*Completed:\*\* The lab environment, troubleshooting exercises,
 
-# and monitoring alarm are complete. Resource cleanup and final cost
+# and monitoring test are complete.
 
-# verification are pending.
+# 
+
+# The EC2 instance was terminated, its Elastic IP was released,
+
+# and the custom VPC was deleted. Final billing verification and
+
+# remaining resource checks are pending.
 
 # 
 
@@ -20,11 +26,15 @@
 
 # This hands-on project demonstrates how to build and support a
 
-# website hosted on an Amazon EC2 instance. I created a custom VPC,
+# website hosted on an Amazon EC2 instance.
 
-# deployed a Linux web server, investigated connection issues,
+# 
 
-# performed a simulated service recovery, and configured monitoring.
+# I created a custom VPC, deployed a Linux web server, investigated
+
+# connection issues, performed a simulated service recovery, and
+
+# configured a CloudWatch alarm with an email notification.
 
 # 
 
@@ -88,7 +98,7 @@
 
 # 
 
-# The subnet's route table directs internet traffic to an internet
+# The subnet's route table directed internet traffic to an internet
 
 # gateway. The EC2 instance used an Elastic IP address for public
 
@@ -228,9 +238,9 @@
 
 # 
 
-# \*\*Issue:\*\* I intentionally stopped Nginx to simulate a web
+# \*\*Issue:\*\* I intentionally stopped Nginx to simulate a web service
 
-# service outage. The website stopped loading.
+# outage. The website stopped loading.
 
 # 
 
@@ -340,9 +350,9 @@
 
 # 
 
-# Sensitive information, including AWS account details and public IP
+# Sensitive information, including AWS account details and public
 
-# addresses, should be redacted before screenshots are published.
+# IP addresses, should be redacted before screenshots are published.
 
 # 
 
@@ -372,9 +382,9 @@
 
 # &#x20; monitoring questions.
 
-# \- Documenting symptoms, investigation, resolution, and verification
+# \- Documenting symptoms, investigation, resolution, and
 
-# &#x20; makes support work easier to explain and repeat.
+# &#x20; verification makes support work easier to explain and repeat.
 
 # 
 
@@ -399,4 +409,10 @@
 # \*\*Lab resource cost:\*\* Pending. The lab services were not yet
 
 # listed in the AWS bill when I checked.
+
+# 
+
+# AWS Skill Builder and Developer Support subscription charges are
+
+# being reviewed separately from the lab's resource costs.
 
