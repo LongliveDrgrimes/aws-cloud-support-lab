@@ -198,29 +198,147 @@
 
 # 
 
-# \*\*Planned:\*\* Create a CloudWatch CPU utilization alarm and configure an Amazon SNS email notification. Record the threshold, test method, and actual result here after completing the exercise.
+# Created a CloudWatch alarm to monitor the EC2 instance's average
+
+# CPU utilization over a five-minute period. The alarm sends an email
+
+# notification through an Amazon SNS topic when its threshold is met.
 
 # 
 
-# A CPU alarm does not reliably detect an Nginx service outage. A separate service-availability check would be a useful future improvement.
+# To test the notification, I temporarily changed the threshold to
+
+# greater than or equal to 0%, confirmed that the alarm entered the
+
+# ALARM state, and received an email. I then restored the threshold
+
+# to greater than 70%.
 
 # 
 
-# \## Next exercise: Simulated service outage
+# A CPU alarm does not reliably detect an Nginx service outage.
+
+# A separate website availability check would be a future improvement.
+
+
+
+
+
+# \## Troubleshooting ticket 3: Simulated Nginx service outage
 
 # 
 
-# \*\*Planned:\*\* Intentionally stop Nginx, inspect the service status and logs, restart it, and verify the website. Document the commands, observations, and outcome after completing the exercise.
+# \*\*Scenario:\*\* A customer reports that the website is unavailable.
 
 # 
+
+# \*\*Issue:\*\* The website stopped loading after I intentionally stopped
+
+# the Nginx service to simulate an outage.
+
+# 
+
+# \*\*Investigation:\*\*
+
+# 
+
+# \- Checked the Nginx service status using:
+
+# 
+
+# &#x20; ```bash
+
+# &#x20; sudo systemctl status nginx --no-pager
+
+# &#x20; ```
+
+# 
+
+# \- Reviewed recent service logs using:
+
+# 
+
+# &#x20; ```bash
+
+# &#x20; sudo journalctl -u nginx --no-pager -n 30
+
+# &#x20; ```
+
+# 
+
+# \- Confirmed that Nginx was inactive.
+
+# 
+
+# \*\*Cause:\*\* The Nginx web service had been intentionally stopped
+
+# for this exercise.
+
+# 
+
+# \*\*Resolution:\*\* Restarted the service using:
+
+# 
+
+# ```bash
+
+# sudo systemctl start nginx
+
+# ```
+
+# 
+
+# \*\*Verification:\*\*
+
+# 
+
+# \- Checked the service status and confirmed it was active.
+
+# \- Refreshed the website in a browser and confirmed it loaded.
+
+# 
+
+# \*\*Customer update:\*\* The website is available again. I found that
+
+# the web service had stopped, restarted it, and verified that the
+
+# page was loading.
+
+# 
+
+# \*\*Lesson learned:\*\* Checking the service status and logs helps
+
+# identify whether a website issue is caused by the web server.
+
+
 
 # \## Evidence
 
 # 
 
-# Screenshots can be added to the `screenshots` folder to show the VPC, route table, security group, Session Manager connection, working website, and troubleshooting results. Remove or redact account numbers, public IP addresses, email addresses, credentials, and other sensitive information before publishing.
+# The `screenshots` folder documents the VPC, subnet, internet gateway,
+
+# route table, network ACL, security groups, EC2 instance, and Session
+
+# Manager connection. It also shows the connection issues I investigated
+
+# and the steps I took to restore access to the website.
 
 # 
+
+# The screenshots include the simulated Nginx service outage, the
+
+# restarted service, and the website working after recovery.
+
+# 
+
+# Sensitive information, including AWS account details and public IP
+
+# addresses, has been redacted from the screenshots.
+
+
+
+
 
 # \## Lessons learned
 
